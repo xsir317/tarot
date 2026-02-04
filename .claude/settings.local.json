@@ -5,7 +5,8 @@
       "Bash(ls:*)",
       "Bash(git worktree:*)",
       "Bash(git checkout:*)",
-      "Bash(List all worktrees)"
+      "Bash(List all worktrees)",
+      "Bash(git commit:*)"
     ]
   }
 }
