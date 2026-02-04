@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(find docs -name \"*. \"*.md \")",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git worktree:*)",
+      "Bash(git checkout:*)",
+      "Bash(List all worktrees)"
     ]
   }
 }
