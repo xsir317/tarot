@@ -59,7 +59,7 @@ export default function ReadingPage() {
       try {
         const res = await apiClient.post('/tarot/interpret', {
           question,
-          cards: cards.map(c => ({ id: c.id, name: c.name, position: c.position })),
+          cards: cards.map(c => ({ id: c.id, name: c.name_key, position: c.position })), // Pass name_key or let backend handle lookup by ID
           language: 'zh'
         });
         const { interpretations, reading_id, overall_interpretation } = res.data.data;
@@ -167,7 +167,7 @@ export default function ReadingPage() {
                       animate={{ opacity: 1 }}
                       className="mt-4 text-center"
                     >
-                      <p className="font-serif text-amber-300">{card.name}</p>
+                      <p className="font-serif text-amber-300">{t(card.name_key)}</p>
                       <p className="text-xs text-slate-400 uppercase tracking-widest">{card.position}</p>
                     </motion.div>
                   )}

@@ -1,24 +1,390 @@
 {
   "Index": {
-    "title": { "en": "Mystic Tarot", "zh": "神秘塔罗" },
-    "subtitle": { "en": "Unveil your destiny with AI-powered readings", "zh": "AI 驱动的命运指引" },
-    "start_button": { "en": "Start Reading", "zh": "开始占卜" },
-    "history_button": { "en": "My History", "zh": "我的记录" },
-    "login_button": { "en": "Login / Register", "zh": "登录 / 注册" }
+    "title": {
+      "en": "Mystic Tarot",
+      "zh": "神秘塔罗"
+    },
+    "subtitle": {
+      "en": "Unveil your destiny with AI-powered readings",
+      "zh": "AI 驱动的命运指引"
+    },
+    "start_button": {
+      "en": "Start Reading",
+      "zh": "开始占卜"
+    },
+    "history_button": {
+      "en": "My History",
+      "zh": "我的记录"
+    },
+    "login_button": {
+      "en": "Login / Register",
+      "zh": "登录 / 注册"
+    }
   },
   "Auth": {
-    "login_title": { "en": "Login", "zh": "登录" },
-    "phone_label": { "en": "Phone Number", "zh": "手机号码" },
-    "code_label": { "en": "Verification Code", "zh": "验证码" },
-    "send_code": { "en": "Send Code", "zh": "发送验证码" },
-    "login_button": { "en": "Login", "zh": "登录" },
-    "code_sent": { "en": "Code sent!", "zh": "验证码已发送！" },
-    "login_success": { "en": "Login successful!", "zh": "登录成功！" }
+    "login_title": {
+      "en": "Login",
+      "zh": "登录"
+    },
+    "phone_label": {
+      "en": "Phone Number",
+      "zh": "手机号码"
+    },
+    "code_label": {
+      "en": "Verification Code",
+      "zh": "验证码"
+    },
+    "send_code": {
+      "en": "Send Code",
+      "zh": "发送验证码"
+    },
+    "login_button": {
+      "en": "Login",
+      "zh": "登录"
+    },
+    "code_sent": {
+      "en": "Code sent!",
+      "zh": "验证码已发送！"
+    },
+    "login_success": {
+      "en": "Login successful!",
+      "zh": "登录成功！"
+    }
   },
   "Tarot": {
-    "input_placeholder": { "en": "Ask your question...", "zh": "在此输入你的问题..." },
-    "shuffle_button": { "en": "Shuffle Cards", "zh": "洗牌" },
-    "draw_button": { "en": "Draw Cards", "zh": "抽牌" },
-    "reveal_button": { "en": "Reveal Destiny", "zh": "揭示命运" }
+    "input_placeholder": {
+      "en": "Ask your question...",
+      "zh": "在此输入你的问题..."
+    },
+    "shuffle_button": {
+      "en": "Shuffle Cards",
+      "zh": "洗牌"
+    },
+    "draw_button": {
+      "en": "Draw Cards",
+      "zh": "抽牌"
+    },
+    "reveal_button": {
+      "en": "Reveal Destiny",
+      "zh": "揭示命运"
+    }
+  },
+  "Cards": {
+    "card_0": {
+      "en": "The Fool",
+      "zh": "愚者"
+    },
+    "card_1": {
+      "en": "The Magician",
+      "zh": "魔术师"
+    },
+    "card_2": {
+      "en": "The High Priestess",
+      "zh": "女祭司"
+    },
+    "card_3": {
+      "en": "The Empress",
+      "zh": "女皇"
+    },
+    "card_4": {
+      "en": "The Emperor",
+      "zh": "皇帝"
+    },
+    "card_5": {
+      "en": "The Hierophant",
+      "zh": "教皇"
+    },
+    "card_6": {
+      "en": "The Lovers",
+      "zh": "恋人"
+    },
+    "card_7": {
+      "en": "The Chariot",
+      "zh": "战车"
+    },
+    "card_8": {
+      "en": "Strength",
+      "zh": "力量"
+    },
+    "card_9": {
+      "en": "The Hermit",
+      "zh": "隐士"
+    },
+    "card_10": {
+      "en": "Wheel of Fortune",
+      "zh": "命运之轮"
+    },
+    "card_11": {
+      "en": "Justice",
+      "zh": "正义"
+    },
+    "card_12": {
+      "en": "The Hanged Man",
+      "zh": "倒吊人"
+    },
+    "card_13": {
+      "en": "Death",
+      "zh": "死神"
+    },
+    "card_14": {
+      "en": "Temperance",
+      "zh": "节制"
+    },
+    "card_15": {
+      "en": "The Devil",
+      "zh": "恶魔"
+    },
+    "card_16": {
+      "en": "The Tower",
+      "zh": "塔"
+    },
+    "card_17": {
+      "en": "The Star",
+      "zh": "星星"
+    },
+    "card_18": {
+      "en": "The Moon",
+      "zh": "月亮"
+    },
+    "card_19": {
+      "en": "The Sun",
+      "zh": "太阳"
+    },
+    "card_20": {
+      "en": "Judgement",
+      "zh": "审判"
+    },
+    "card_21": {
+      "en": "The World",
+      "zh": "世界"
+    },
+    "card_w1": {
+      "en": "Ace of Wands",
+      "zh": "权杖王牌"
+    },
+    "card_w2": {
+      "en": "Two of Wands",
+      "zh": "权杖二"
+    },
+    "card_w3": {
+      "en": "Three of Wands",
+      "zh": "权杖三"
+    },
+    "card_w4": {
+      "en": "Four of Wands",
+      "zh": "权杖四"
+    },
+    "card_w5": {
+      "en": "Five of Wands",
+      "zh": "权杖五"
+    },
+    "card_w6": {
+      "en": "Six of Wands",
+      "zh": "权杖六"
+    },
+    "card_w7": {
+      "en": "Seven of Wands",
+      "zh": "权杖七"
+    },
+    "card_w8": {
+      "en": "Eight of Wands",
+      "zh": "权杖八"
+    },
+    "card_w9": {
+      "en": "Nine of Wands",
+      "zh": "权杖九"
+    },
+    "card_w10": {
+      "en": "Ten of Wands",
+      "zh": "权杖十"
+    },
+    "card_wp": {
+      "en": "Page of Wands",
+      "zh": "权杖侍者"
+    },
+    "card_wk": {
+      "en": "Knight of Wands",
+      "zh": "权杖骑士"
+    },
+    "card_wq": {
+      "en": "Queen of Wands",
+      "zh": "权杖皇后"
+    },
+    "card_wk2": {
+      "en": "King of Wands",
+      "zh": "权杖国王"
+    },
+    "card_c1": {
+      "en": "Ace of Cups",
+      "zh": "圣杯王牌"
+    },
+    "card_c2": {
+      "en": "Two of Cups",
+      "zh": "圣杯二"
+    },
+    "card_c3": {
+      "en": "Three of Cups",
+      "zh": "圣杯三"
+    },
+    "card_c4": {
+      "en": "Four of Cups",
+      "zh": "圣杯四"
+    },
+    "card_c5": {
+      "en": "Five of Cups",
+      "zh": "圣杯五"
+    },
+    "card_c6": {
+      "en": "Six of Cups",
+      "zh": "圣杯六"
+    },
+    "card_c7": {
+      "en": "Seven of Cups",
+      "zh": "圣杯七"
+    },
+    "card_c8": {
+      "en": "Eight of Cups",
+      "zh": "圣杯八"
+    },
+    "card_c9": {
+      "en": "Nine of Cups",
+      "zh": "圣杯九"
+    },
+    "card_c10": {
+      "en": "Ten of Cups",
+      "zh": "圣杯十"
+    },
+    "card_cp": {
+      "en": "Page of Cups",
+      "zh": "圣杯侍者"
+    },
+    "card_ck": {
+      "en": "Knight of Cups",
+      "zh": "圣杯骑士"
+    },
+    "card_cq": {
+      "en": "Queen of Cups",
+      "zh": "圣杯皇后"
+    },
+    "card_ck2": {
+      "en": "King of Cups",
+      "zh": "圣杯国王"
+    },
+    "card_s1": {
+      "en": "Ace of Swords",
+      "zh": "宝剑王牌"
+    },
+    "card_s2": {
+      "en": "Two of Swords",
+      "zh": "宝剑二"
+    },
+    "card_s3": {
+      "en": "Three of Swords",
+      "zh": "宝剑三"
+    },
+    "card_s4": {
+      "en": "Four of Swords",
+      "zh": "宝剑四"
+    },
+    "card_s5": {
+      "en": "Five of Swords",
+      "zh": "宝剑五"
+    },
+    "card_s6": {
+      "en": "Six of Swords",
+      "zh": "宝剑六"
+    },
+    "card_s7": {
+      "en": "Seven of Swords",
+      "zh": "宝剑七"
+    },
+    "card_s8": {
+      "en": "Eight of Swords",
+      "zh": "宝剑八"
+    },
+    "card_s9": {
+      "en": "Nine of Swords",
+      "zh": "宝剑九"
+    },
+    "card_s10": {
+      "en": "Ten of Swords",
+      "zh": "宝剑十"
+    },
+    "card_sp": {
+      "en": "Page of Swords",
+      "zh": "宝剑侍者"
+    },
+    "card_sk": {
+      "en": "Knight of Swords",
+      "zh": "宝剑骑士"
+    },
+    "card_sq": {
+      "en": "Queen of Swords",
+      "zh": "宝剑皇后"
+    },
+    "card_sk2": {
+      "en": "King of Swords",
+      "zh": "宝剑国王"
+    },
+    "card_p1": {
+      "en": "Ace of Pentacles",
+      "zh": "钱币王牌"
+    },
+    "card_p2": {
+      "en": "Two of Pentacles",
+      "zh": "钱币二"
+    },
+    "card_p3": {
+      "en": "Three of Pentacles",
+      "zh": "钱币三"
+    },
+    "card_p4": {
+      "en": "Four of Pentacles",
+      "zh": "钱币四"
+    },
+    "card_p5": {
+      "en": "Five of Pentacles",
+      "zh": "钱币五"
+    },
+    "card_p6": {
+      "en": "Six of Pentacles",
+      "zh": "钱币六"
+    },
+    "card_p7": {
+      "en": "Seven of Pentacles",
+      "zh": "钱币七"
+    },
+    "card_p8": {
+      "en": "Eight of Pentacles",
+      "zh": "钱币八"
+    },
+    "card_p9": {
+      "en": "Nine of Pentacles",
+      "zh": "钱币九"
+    },
+    "card_p10": {
+      "en": "Ten of Pentacles",
+      "zh": "钱币十"
+    },
+    "card_pp": {
+      "en": "Page of Pentacles",
+      "zh": "钱币侍者"
+    },
+    "card_pk": {
+      "en": "Knight of Pentacles",
+      "zh": "钱币骑士"
+    },
+    "card_pq": {
+      "en": "Queen of Pentacles",
+      "zh": "钱币皇后"
+    },
+    "card_pk2": {
+      "en": "King of Pentacles",
+      "zh": "钱币国王"
+    },
+    "card_": {
+      "en": "home-images-001-sm",
+      "zh": "卡背图案1"
+    }
   }
 }

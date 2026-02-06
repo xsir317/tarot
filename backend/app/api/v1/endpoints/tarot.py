@@ -67,16 +67,17 @@ async def validate_question(
 
 @router.post("/draw")
 async def draw_cards() -> SuccessResponse[DrawCardsResponse]:
-    selected_cards = random.sample(TAROT_CARDS, 3)
+    # Filter out empty entries if any (though we cleaned them up)
+    valid_cards = [c for c in TAROT_CARDS if c["id"]]
+    selected_cards = random.sample(valid_cards, 3)
+    
     cards = []
     for card in selected_cards:
         cards.append({
             "id": card["id"],
-            "name": card["name"],
-            "name_en": card["name_en"],
-            "name_zh": card["name_zh"],
+            "name_key": card["name_key"],
+            "image": card["image"],
             "position": "upright" if random.choice([True, False]) else "reversed",
-            # "image_url": f"/assets/cards/{card['id']}.jpg" # TODO: Add images
         })
 
     return SuccessResponse(data=DrawCardsResponse(cards=cards))

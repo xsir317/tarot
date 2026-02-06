@@ -5,11 +5,9 @@ export type TarotStage = 'input' | 'shuffling' | 'drawing' | 'revealing' | 'resu
 
 export interface Card {
   id: string;
-  name: string;
-  name_en?: string;
-  name_zh?: string;
+  name_key: string; // Updated to match backend
   position: 'upright' | 'reversed';
-  image_url?: string;
+  image: string; // Updated to match backend
   isRevealed?: boolean;
 }
 

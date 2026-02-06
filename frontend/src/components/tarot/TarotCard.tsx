@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Card } from '@/stores/useTarotStore';
+import { useTranslations } from 'next-intl';
 
 interface TarotCardProps {
   card?: Card;
@@ -21,6 +22,8 @@ export function TarotCard({
   width = 200,
   height = 340
 }: TarotCardProps) {
+  const t = useTranslations('Cards');
+
   return (
     <div 
       className={cn("relative perspective-1000 cursor-pointer", className)}
@@ -38,12 +41,12 @@ export function TarotCard({
           className="absolute inset-0 backface-hidden rounded-xl border-2 border-slate-700 bg-slate-900 flex items-center justify-center overflow-hidden shadow-xl"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="absolute inset-2 border border-slate-800 rounded-lg opacity-50" />
-          <div className="w-16 h-16 rounded-full border-2 border-purple-500/30 flex items-center justify-center">
-            <div className="w-12 h-12 rounded-full border border-purple-500/50" />
-          </div>
-          {/* Pattern overlay */}
-          <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10 bg-repeat" />
+          {/* Real Card Back Image */}
+          <img 
+            src="/cards/card_back.webp" 
+            alt="Card Back" 
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* Card Front */}
@@ -53,15 +56,15 @@ export function TarotCard({
         >
           {card ? (
             <div className={cn(
-              "w-full h-full flex flex-col items-center justify-between p-4",
+              "w-full h-full flex flex-col items-center justify-between",
               card.position === 'reversed' && "rotate-180"
             )}>
-              <div className="text-sm font-serif font-bold uppercase tracking-wider">{card.name_en}</div>
-              <div className="flex-1 w-full flex items-center justify-center my-2 bg-slate-200 rounded-lg">
-                {/* Image Placeholder */}
-                <span className="text-4xl">🔮</span>
-              </div>
-              <div className="text-lg font-serif font-bold">{card.name}</div>
+              {/* Real Card Front Image */}
+              <img 
+                src={card.image || `/cards/${card.id}.webp`} 
+                alt={t(card.name_key)} 
+                className="w-full h-full object-cover"
+              />
             </div>
           ) : null}
         </div>
