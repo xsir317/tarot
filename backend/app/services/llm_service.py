@@ -1,8 +1,10 @@
 """LLM service for question validation and tarot interpretation."""
 
+from pathlib import Path
 from typing import Any
 
-import openai
+import litellm
+from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -49,107 +51,27 @@ class LLMService:
         """
         self._api_key = api_key or settings.openai_api_key
         self._model = model or settings.openai_model
-        self._client = None
-
-    def _get_client(self) -> openai.AsyncOpenAI:
-        """Get OpenAI client (lazy initialization)."""
-        if self._client is None:
-            self._client = openai.AsyncOpenAI(api_key=self._api_key)
-        return self._client
-
-    def _build_system_prompt(self, language: str) -> str:
-        """Build system prompt with language specification.
-
-        Args:
-            language: User's preferred language (zh/ja/en)
-
-        Returns:
-            System prompt string
-        """
-        return f"""You must respond in {language} for all text responses."""
-
-    def _build_validation_prompt(
-        self,
-        question: str,
-        gender: str,
-        language: str,
-    ) -> str:
-        """Build user prompt for question validation.
-
-        Args:
-            question: User's question
-            gender: User's gender
-            language: User's preferred language
-
-        Returns:
-            User prompt string
-        """
-        return f"""You are a responsible tarot reading assistant. Determine if user's question is suitable for tarot interpretation.
-
-User's gender: {gender}
-User's question: {question}
-
-Return a JSON result:
-{{
-  "suitable": true/false,
-  "reason": "Your judgment reason",
-  "redirect_message": "If not suitable, give user guidance"
-}}
-
-Judgment criteria:
-1. Prohibited questions: pain, injury, self-harm -> guide to professional help
-2. Unsuitable questions: academic, factual queries -> guide to appropriate channels
-3. Suitable questions: life confusion, relationships, career, spiritual matters"""
-
-    def _build_interpretation_prompt(
-        self,
-        question: str,
-        gender: str,
-        cards: list[dict[str, Any]],
-        language: str,
-    ) -> str:
-        """Build user prompt for tarot interpretation.
-
-        Args:
-            question: User's question
-            gender: User's gender
-            cards: List of drawn tarot cards
-            language: User's preferred language (zh/ja/en)
-
-        Returns:
-            User prompt string
-        """
-        cards_text = "\n".join(
-            f"{i+1}. {card.get('name', '')} ({card.get('position', '')})"
-            for i, card in enumerate(cards)
+        
+        # Initialize Jinja2 environment
+        template_dir = Path(__file__).resolve().parent.parent / "templates" / "prompts"
+        self._jinja_env = Environment(
+            loader=FileSystemLoader(template_dir),
+            trim_blocks=True,
+            lstrip_blocks=True,
         )
 
-        return f"""You are an experienced tarot reader. Interpret three tarot cards.
+    def _render_template(self, template_name: str, **kwargs: Any) -> str:
+        """Render a Jinja2 template.
 
-User's gender: {gender}
-User's question: {question}
+        Args:
+            template_name: Name of the template file
+            **kwargs: Context variables for the template
 
-Tarot cards:
-{cards_text}
-
-Requirements:
-- Gentle, respectful tone; avoid absolute assertions
-- 200-300 words total
-- End with encouragement
-- Return JSON format:
-{{
-  "interpretations": [
-    {{
-      "card_index": 0,
-      "card_name": "card name",
-      "position": "position",
-      "interpretation": "interpretation text"
-    }}
-  ],
-  "overall_interpretation": "overall interpretation"
-}}
-
-Tarot is guidance, not fate. Convey warmth and positivity."""
+        Returns:
+            Rendered string
+        """
+        template = self._jinja_env.get_template(template_name)
+        return template.render(**kwargs)
 
     async def validate_question(
         self,
@@ -171,28 +93,26 @@ Tarot is guidance, not fate. Convey warmth and positivity."""
             TarotError: If LLM call fails
         """
         try:
-            client = self._get_client()
+            system_prompt = self._render_template("system.j2", language=language)
+            user_prompt = self._render_template(
+                "validation.j2",
+                question=question,
+                gender=gender,
+            )
 
-            response = await client.chat.completions.create(
+            response = await litellm.acompletion(
                 model=self._model,
                 messages=[
-                    {
-                        "role": "system",
-                        "content": self._build_system_prompt(language),
-                    },
-                    {
-                        "role": "user",
-                        "content": self._build_validation_prompt(
-                            question, gender, language
-                        ),
-                    },
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
                 ],
+                api_key=self._api_key,
                 response_format={"type": "json_object"},
             )
 
-            return ValidationResult.model_validate(
-                response.choices[0].message.content
-            )
+            # litellm returns a ModelResponse object, similar to OpenAI
+            content = response.choices[0].message.content
+            return ValidationResult.model_validate_json(content)
 
         except Exception as e:
             raise TarotError(
@@ -262,28 +182,26 @@ Tarot is guidance, not fate. Convey warmth and positivity."""
             TarotError: If LLM call fails
         """
         try:
-            client = self._get_client()
+            system_prompt = self._render_template("system.j2", language=language)
+            user_prompt = self._render_template(
+                "interpretation.j2",
+                question=question,
+                gender=gender,
+                cards=cards,
+            )
 
-            response = await client.chat.completions.create(
+            response = await litellm.acompletion(
                 model=self._model,
                 messages=[
-                    {
-                        "role": "system",
-                        "content": self._build_system_prompt(language),
-                    },
-                    {
-                        "role": "user",
-                        "content": self._build_interpretation_prompt(
-                            question, gender, cards, language
-                        ),
-                    },
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
                 ],
+                api_key=self._api_key,
                 response_format={"type": "json_object"},
             )
 
-            return InterpretationResult.model_validate(
-                response.choices[0].message.content
-            )
+            content = response.choices[0].message.content
+            return InterpretationResult.model_validate_json(content)
 
         except Exception as e:
             raise TarotError(
@@ -318,7 +236,7 @@ Tarot is guidance, not fate. Convey warmth and positivity."""
 
         overall = (
             "These cards suggest a path forward. Trust in guidance you receive "
-"and take action aligned with your true intentions."
+            "and take action aligned with your true intentions."
         )
 
         return InterpretationResult(

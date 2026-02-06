@@ -7,6 +7,7 @@ from app.api.v1.endpoints import (
     health,
     payment,
     tarot,
+    quota,
 )
 
 api_router = APIRouter()
@@ -15,3 +16,4 @@ api_router.include_router(health.router, tags=["health"])
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(tarot.router, prefix="/tarot", tags=["tarot"])
 api_router.include_router(payment.router, prefix="/payment", tags=["payment"])
+api_router.include_router(quota.router, prefix="/quota", tags=["quota"])

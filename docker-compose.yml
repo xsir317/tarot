@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tarot-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=postgresql+asyncpg://tarot_user:tarot_password@postgres:5432/tarot_db
+      - REDIS_URL=redis://redis:6379/0
+      # Secrets should be passed via .env file or environment variables
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-changeme}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - tarot_network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: tarot-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=tarot_user
+      - POSTGRES_PASSWORD=tarot_password
+      - POSTGRES_DB=tarot_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tarot_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tarot_user -d tarot_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    container_name: tarot-redis
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - tarot_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  tarot_network:
+    driver: bridge

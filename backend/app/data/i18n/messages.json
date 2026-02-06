@@ -1,0 +1,24 @@
+{
+  "Index": {
+    "title": { "en": "Mystic Tarot", "zh": "神秘塔罗" },
+    "subtitle": { "en": "Unveil your destiny with AI-powered readings", "zh": "AI 驱动的命运指引" },
+    "start_button": { "en": "Start Reading", "zh": "开始占卜" },
+    "history_button": { "en": "My History", "zh": "我的记录" },
+    "login_button": { "en": "Login / Register", "zh": "登录 / 注册" }
+  },
+  "Auth": {
+    "login_title": { "en": "Login", "zh": "登录" },
+    "phone_label": { "en": "Phone Number", "zh": "手机号码" },
+    "code_label": { "en": "Verification Code", "zh": "验证码" },
+    "send_code": { "en": "Send Code", "zh": "发送验证码" },
+    "login_button": { "en": "Login", "zh": "登录" },
+    "code_sent": { "en": "Code sent!", "zh": "验证码已发送！" },
+    "login_success": { "en": "Login successful!", "zh": "登录成功！" }
+  },
+  "Tarot": {
+    "input_placeholder": { "en": "Ask your question...", "zh": "在此输入你的问题..." },
+    "shuffle_button": { "en": "Shuffle Cards", "zh": "洗牌" },
+    "draw_button": { "en": "Draw Cards", "zh": "抽牌" },
+    "reveal_button": { "en": "Reveal Destiny", "zh": "揭示命运" }
+  }
+}

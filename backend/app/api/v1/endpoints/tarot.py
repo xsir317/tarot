@@ -2,54 +2,59 @@
 
 import random
 from typing import Any
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from app.core.schemas import SuccessResponse
-from app.services.llm_service import LLMService
+from app.services.llm_service import LLMService, ValidationResult, InterpretationResult, get_llm_service
 from app.data.tarot_cards import TAROT_CARDS
-
 
 router = APIRouter()
 
 
 class ValidateQuestionRequest(BaseModel):
-    """Request model for question validation."""
-
     question: str
-    gender: str
+    gender: str | None = None
     language: str = "zh"
 
 
-class DrawCardsRequest(BaseModel):
-    """Request model for drawing cards."""
-
-    device_fingerprint: str
-    ip_address: str = "127.0.0.1"
-
-
-class InterpretCardsRequest(BaseModel):
-    """Request model for interpreting cards."""
-
-    question: str
-    gender: str
-    language: str = "zh"
+class DrawCardsResponse(BaseModel):
     cards: list[dict[str, Any]]
 
 
-@router.post("/validate-question")
+class InterpretCardsRequest(BaseModel):
+    question: str
+    cards: list[dict[str, Any]]
+    language: str = "zh"
+    device_fingerprint: str | None = None
+
+
+class InterpretCardsResponse(BaseModel):
+    reading_id: str
+    interpretations: list[dict[str, Any]]
+    overall_interpretation: str
+
+
+@router.post("/validate")
 async def validate_question(
     request: ValidateQuestionRequest,
-    llm_service: LLMService = Depends(lambda: LLMService()),
+    llm_service: LLMService = Depends(get_llm_service),
 ) -> SuccessResponse[dict[str, Any]]:
-    """Validate if a question is suitable for tarot reading.
-
-    This endpoint uses to LLM to determine if question is appropriate.
-    """
-    result = llm_service.validate_question_sync(
+    # In production, we would use the async method.
+    # For MVP without API Key, we might fallback to sync mock if key is missing,
+    # or better, rely on the Test to mock the service.
+    # Here I will call the async method, assuming the test will mock it.
+    
+    # NOTE: Since we are in "Red-Green" and I don't have an API Key in env,
+    # running this manually would fail. But the test should mock it.
+    # However, to be safe for manual testing (if needed), I will check if API key is set?
+    # No, let's stick to standard dependency injection.
+    
+    result = await llm_service.validate_question(
         request.question,
-        request.gender,
+        request.gender or "unknown",
         request.language,
     )
 
@@ -60,18 +65,9 @@ async def validate_question(
     })
 
 
-@router.post("/draw-cards")
-async def draw_cards(
-    request: DrawCardsRequest,
-) -> SuccessResponse[dict[str, Any]]:
-    """Draw 3 random tarot cards.
-
-    Each card can be either upright or reversed.
-    """
-    # Select 3 random cards without replacement
+@router.post("/draw")
+async def draw_cards() -> SuccessResponse[DrawCardsResponse]:
     selected_cards = random.sample(TAROT_CARDS, 3)
-
-    # Determine position (upright or reversed) for each card
     cards = []
     for card in selected_cards:
         cards.append({
@@ -80,36 +76,39 @@ async def draw_cards(
             "name_en": card["name_en"],
             "name_zh": card["name_zh"],
             "position": "upright" if random.choice([True, False]) else "reversed",
+            # "image_url": f"/assets/cards/{card['id']}.jpg" # TODO: Add images
         })
 
-    return SuccessResponse(data={"cards": cards})
+    return SuccessResponse(data=DrawCardsResponse(cards=cards))
 
 
 @router.post("/interpret")
 async def interpret_cards(
     request: InterpretCardsRequest,
-    llm_service: LLMService = Depends(lambda: LLMService()),
-) -> SuccessResponse[dict[str, Any]]:
-    """Interpret drawn tarot cards.
-
-    This endpoint uses to LLM to provide interpretations for the drawn cards.
-    """
-    result = llm_service.interpret_cards_sync(
+    llm_service: LLMService = Depends(get_llm_service),
+) -> SuccessResponse[InterpretCardsResponse]:
+    result = await llm_service.interpret_cards(
         request.question,
-        request.gender,
+        "unknown", # Gender not in request? Check API design. API design has gender in validate, but not interpret? 
+                   # Design says: "Interpret" request body has "question", "cards", "language".
+                   # It seems I missed "gender" in Interpret request in API Design, or it's stateless?
+                   # Actually, usually we pass context. Let's add gender to request or default to unknown.
         request.cards,
         request.language,
     )
-
-    return SuccessResponse(data={
-        "interpretations": [
+    
+    # Mock saving reading to DB
+    reading_id = str(uuid4())
+    
+    return SuccessResponse(data=InterpretCardsResponse(
+        reading_id=reading_id,
+        interpretations=[
             {
-                "card_index": interp.card_index,
-                "card_name": interp.card_name,
-                "position": interp.position,
-                "interpretation": interp.interpretation,
+                "card_id": interp.card_name, # Map correctly based on LLM output
+                "text": interp.interpretation,
+                # "card_index": interp.card_index
             }
             for interp in result.interpretations
         ],
-        "overall_interpretation": result.overall_interpretation,
-    })
+        overall_interpretation=result.overall_interpretation,
+    ))

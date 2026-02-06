@@ -1,0 +1,24 @@
+{
+  "Index": {
+    "title": "Mystic Tarot",
+    "subtitle": "Unveil your destiny with AI-powered readings",
+    "start_button": "Start Reading",
+    "history_button": "My History",
+    "login_button": "Login / Register"
+  },
+  "Auth": {
+    "login_title": "Login",
+    "phone_label": "Phone Number",
+    "code_label": "Verification Code",
+    "send_code": "Send Code",
+    "login_button": "Login",
+    "code_sent": "Code sent!",
+    "login_success": "Login successful!"
+  },
+  "Tarot": {
+    "input_placeholder": "Ask your question...",
+    "shuffle_button": "Shuffle Cards",
+    "draw_button": "Draw Cards",
+    "reveal_button": "Reveal Destiny"
+  }
+}

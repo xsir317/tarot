@@ -55,9 +55,8 @@ def get_session_factory() -> async_sessionmaker[AsyncSession]:
     return _async_session_factory
 
 
-@asynccontextmanager
 async def get_session() -> AsyncSession:
-    """Get database session context manager."""
+    """Get database session."""
     session_factory = get_session_factory()
     async with session_factory() as session:
         try:

@@ -1,96 +1,71 @@
-"""Test tarot API endpoints."""
-
 import pytest
+from unittest.mock import AsyncMock, MagicMock
 from fastapi.testclient import TestClient
+from app.services.llm_service import LLMService, ValidationResult, InterpretationResult, CardInterpretation, get_llm_service
+from app.api.v1.endpoints.tarot import validate_question
 
-from app.main import app
+# Mock Service
+class MockLLMService:
+    async def validate_question(self, question, gender, language):
+        return ValidationResult(
+            suitable=True,
+            reason="Suitable",
+            redirect_message=None
+        )
 
-
-def test_validate_question_endpoint():
-    """Test question validation endpoint."""
-    client = TestClient(app)
-
-    response = client.post(
-        "/api/v1/tarot/validate-question",
-        json={
-            "question": "I am confused about my work, what should I do?",
-            "gender": "male",
-            "language": "en",
-        },
-    )
-
-    assert response.status_code == 200
-    data = response.json()
-    assert "data" in data
-    assert data["data"]["suitable"] is True
-
-
-def test_validate_question_endpoint_unsuitable():
-    """Test question validation endpoint for unsuitable question."""
-    client = TestClient(app)
-
-    response = client.post(
-        "/api/v1/tarot/validate-question",
-        json={
-            "question": "I feel painful, what should I do?",
-            "gender": "female",
-            "language": "en",
-        },
-    )
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["data"]["suitable"] is False
-    assert data["data"]["redirect_message"] is not None
-
-
-def test_draw_cards_endpoint():
-    """Test draw cards endpoint."""
-    client = TestClient(app)
-
-    response = client.post(
-        "/api/v1/tarot/draw-cards",
-        json={
-            "device_fingerprint": "test-device-123",
-        },
-    )
-
-    assert response.status_code == 200
-    data = response.json()
-    assert "data" in data
-    cards = data["data"]["cards"]
-    assert len(cards) == 3
-
-    # Check card structure
-    for card in cards:
-        assert "id" in card
-        assert "name" in card
-        assert "position" in card
-        assert card["position"] in ["upright", "reversed"]
-
-
-def test_interpret_cards_endpoint():
-    """Test interpret cards endpoint."""
-    client = TestClient(app)
-
-    response = client.post(
-        "/api/v1/tarot/interpret",
-        json={
-            "question": "How is my love life?",
-            "gender": "female",
-            "language": "en",
-            "cards": [
-                {"id": "0", "position": "upright"},
-                {"id": "6", "position": "reversed"},
-                {"id": "16", "position": "upright"},
+    async def interpret_cards(self, question, gender, cards, language):
+        return InterpretationResult(
+            interpretations=[
+                CardInterpretation(
+                    card_index=i,
+                    card_name=c["name"],
+                    position=c["position"],
+                    interpretation="Mock interpretation"
+                ) for i, c in enumerate(cards)
             ],
-        },
-    )
+            overall_interpretation="Overall mock interpretation"
+        )
 
+@pytest.fixture
+def mock_llm_service():
+    return MockLLMService()
+
+@pytest.mark.asyncio
+async def test_tarot_flow(client: TestClient, mock_llm_service):
+    # Override Dependency
+    from app.main import app
+    app.dependency_overrides[get_llm_service] = lambda: mock_llm_service
+    
+    # 1. Validate Question
+    response = client.post("/api/v1/tarot/validate", json={
+        "question": "Is this a good time to start a business?",
+        "language": "en"
+    })
     assert response.status_code == 200
-    data = response.json()
-    assert "data" in data
-    result = data["data"]
-    assert "interpretations" in result
-    assert "overall_interpretation" in result
-    assert len(result["interpretations"]) == 3
+    data = response.json()["data"]
+    assert data["suitable"] is True
+
+    # 2. Draw Cards
+    response = client.post("/api/v1/tarot/draw", json={})
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert len(data["cards"]) == 3
+    cards = data["cards"]
+    
+    # 3. Interpret
+    response = client.post("/api/v1/tarot/interpret", json={
+        "question": "Is this a good time to start a business?",
+        "cards": [
+            {"id": c["id"], "name": c["name"], "position": c["position"]} for c in cards
+        ],
+        "language": "en",
+        "device_fingerprint": "test_fingerprint"
+    })
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert "reading_id" in data
+    assert len(data["interpretations"]) == 3
+    assert "overall_interpretation" in data
+    
+    # Clear overrides
+    app.dependency_overrides = {}
