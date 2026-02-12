@@ -1,0 +1,12 @@
+# 阿里云APT源配置 - Debian 13 (trixie)
+deb https://mirrors.aliyun.com/debian/ trixie main non-free contrib
+deb-src https://mirrors.aliyun.com/debian/ trixie main non-free contrib
+
+deb https://mirrors.aliyun.com/debian-security/ trixie-security main
+deb-src https://mirrors.aliyun.com/debian-security/ trixie-security main
+
+deb https://mirrors.aliyun.com/debian/ trixie-updates main non-free contrib
+deb-src https://mirrors.aliyun.com/debian/ trixie-updates main non-free contrib
+
+deb https://mirrors.aliyun.com/debian/ trixie-backports main non-free contrib
+deb-src https://mirrors.aliyun.com/debian/ trixie-backports main non-free contrib

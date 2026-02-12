@@ -11,6 +11,8 @@
 #### 构建与重构镜像
 如果你修改了后端代码或 `Dockerfile`，需要重新构建镜像：
 
+> **注意**：为了在特定网络环境下加快构建速度，后端 `Dockerfile` 使用了自定义的 `backend/sources.list`（阿里云镜像源）。如果构建时遇到网络问题，请确保该文件内容正确。
+
 ```bash
 # 构建镜像
 docker-compose build
