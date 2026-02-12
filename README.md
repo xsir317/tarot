@@ -139,6 +139,7 @@ footer
 | 页面跳转 | docs/frontend/pages-flow.md |
 | 组件设计 | docs/frontend/component-design.md |
 | 动画规范 | docs/frontend/animation-spec.md |
+| 部署与运维指南 | docs/deployment-and-operations.md |
 
 ## 部署架构
 
