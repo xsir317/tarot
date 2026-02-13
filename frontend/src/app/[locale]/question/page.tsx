@@ -13,7 +13,7 @@ export default function QuestionPage() {
   const t = useTranslations('Tarot');
   const locale = useLocale();
   const router = useRouter();
-  const { setQuestion, setStage } = useTarotStore();
+  const { setQuestion, setStage, setCards, setIsInterpreting, setInterpretations } = useTarotStore();
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +22,7 @@ export default function QuestionPage() {
     
     setLoading(true);
     try {
-      // Validate question API
+      // 1. Validate question
       const res = await apiClient.post('/tarot/validate', { 
         question: input,
         language: locale
@@ -31,9 +31,29 @@ export default function QuestionPage() {
       if (res.data.data.suitable) {
         setQuestion(input);
         setStage('shuffling');
+        
+        // 2. Optimization: Draw cards and start interpretation immediately
+        const drawRes = await apiClient.post('/tarot/draw');
+        const drawnCards = drawRes.data.data.cards;
+        setCards(drawnCards);
+        
+        setIsInterpreting(true);
+        // Start interpretation in background, don't await it
+        apiClient.post('/tarot/interpret', {
+          question: input,
+          cards: drawnCards.map((c: any) => ({ id: c.id, name: c.name_key, position: c.position })),
+          language: locale
+        }).then(interpRes => {
+          const { interpretations, reading_id, overall_interpretation } = interpRes.data.data;
+          setInterpretations(interpretations, reading_id, overall_interpretation);
+        }).catch(err => {
+          console.error("Background interpretation failed", err);
+          setIsInterpreting(false);
+        });
+
         router.push(`/${locale}/tarot/reading`);
       } else {
-        alert(res.data.data.reason); // Better: Toast
+        alert(res.data.data.reason);
       }
     } catch (err: any) {
       console.error(err);

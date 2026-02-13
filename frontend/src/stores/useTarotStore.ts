@@ -12,7 +12,8 @@ export interface Card {
 }
 
 export interface Interpretation {
-  card_id: string;
+  index: number;
+  card_name: string;
   text: string;
 }
 
@@ -23,11 +24,13 @@ interface TarotState {
   interpretations: Interpretation[];
   readingId: string | null;
   overallInterpretation: string | null;
+  isInterpreting: boolean;
   
   setStage: (stage: TarotStage) => void;
   setQuestion: (q: string) => void;
   setCards: (cards: Card[]) => void;
   revealCard: (index: number) => void;
+  setIsInterpreting: (loading: boolean) => void;
   setInterpretations: (interps: Interpretation[], id: string, overall: string) => void;
   reset: () => void;
 }
@@ -41,6 +44,7 @@ export const useTarotStore = create<TarotState>()(
       interpretations: [],
       readingId: null,
       overallInterpretation: null,
+      isInterpreting: false,
 
       setStage: (stage) => set({ stage }),
       setQuestion: (question) => set({ question }),
@@ -52,15 +56,17 @@ export const useTarotStore = create<TarotState>()(
         }
         return { cards: newCards };
       }),
+      setIsInterpreting: (isInterpreting) => set({ isInterpreting }),
       setInterpretations: (interpretations, readingId, overallInterpretation) => 
-        set({ interpretations, readingId, overallInterpretation }),
+        set({ interpretations, readingId, overallInterpretation, isInterpreting: false }),
       reset: () => set({
         stage: 'input',
         question: '',
         cards: [],
         interpretations: [],
         readingId: null,
-        overallInterpretation: null
+        overallInterpretation: null,
+        isInterpreting: false
       }),
     }),
     {

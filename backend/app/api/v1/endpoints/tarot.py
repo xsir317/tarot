@@ -105,9 +105,9 @@ async def interpret_cards(
         reading_id=reading_id,
         interpretations=[
             {
-                "card_id": interp.card_name, # Map correctly based on LLM output
+                "index": interp.card_index,
+                "card_name": interp.card_name,
                 "text": interp.interpretation,
-                # "card_index": interp.card_index
             }
             for interp in result.interpretations
         ],

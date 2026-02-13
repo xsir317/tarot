@@ -23,7 +23,9 @@ export default function ReadingPage() {
     question,
     setInterpretations,
     overallInterpretation,
-    interpretations
+    interpretations,
+    isInterpreting,
+    setIsInterpreting
   } = useTarotStore();
   
   const [loading, setLoading] = useState(false);
@@ -32,18 +34,39 @@ export default function ReadingPage() {
   useEffect(() => {
     if (stage === 'shuffling') {
       const timer = setTimeout(() => {
-        setStage('drawing');
+        // If cards are already pre-fetched (optimized flow), go straight to revealing
+        if (cards.length > 0) {
+          setStage('revealing');
+        } else {
+          setStage('drawing');
+        }
       }, 3000); // Shuffle for 3s
       return () => clearTimeout(timer);
     }
-  }, [stage, setStage]);
+  }, [stage, setStage, cards.length]);
 
   const handleDraw = async () => {
     setLoading(true);
     try {
       const res = await apiClient.post('/tarot/draw');
-      setCards(res.data.data.cards);
+      const drawnCards = res.data.data.cards;
+      setCards(drawnCards);
       setStage('revealing');
+      
+      // OPTIMIZATION: Start interpretation immediately after drawing
+      setIsInterpreting(true);
+      apiClient.post('/tarot/interpret', {
+        question,
+        cards: drawnCards.map((c: any) => ({ id: c.id, name: c.name_key, position: c.position })),
+        language: locale
+      }).then(res => {
+        const { interpretations, reading_id, overall_interpretation } = res.data.data;
+        setInterpretations(interpretations, reading_id, overall_interpretation);
+      }).catch(err => {
+        console.error("Failed to interpret", err);
+        setIsInterpreting(false);
+      });
+
     } catch (err) {
       console.error(err);
     } finally {
@@ -51,27 +74,14 @@ export default function ReadingPage() {
     }
   };
 
-  const handleReveal = async (index: number) => {
+  const handleReveal = (index: number) => {
     if (cards[index].isRevealed) return;
-    
     revealCard(index);
     
     // Check if all cards revealed
     const allRevealed = cards.every((c, i) => i === index || c.isRevealed);
     if (allRevealed) {
-      // Fetch interpretation
-      try {
-        const res = await apiClient.post('/tarot/interpret', {
-          question,
-          cards: cards.map(c => ({ id: c.id, name: c.name_key, position: c.position })), // Pass name_key or let backend handle lookup by ID
-          language: locale
-        });
-        const { interpretations, reading_id, overall_interpretation } = res.data.data;
-        setInterpretations(interpretations, reading_id, overall_interpretation);
-        setStage('result');
-      } catch (err) {
-        console.error("Failed to interpret", err);
-      }
+      setStage('result');
     }
   };
 
@@ -169,10 +179,19 @@ export default function ReadingPage() {
                     <motion.div 
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="mt-4 text-center"
+                      className="mt-4 text-center max-w-[180px]"
                     >
                       <p className="font-serif text-amber-300">{cardsT(card.name_key)}</p>
-                      <p className="text-xs text-slate-400 uppercase tracking-widest">{card.position}</p>
+                      <p className="text-xs text-slate-400 uppercase tracking-widest mb-2">{card.position}</p>
+                      
+                      {/* Individual Card Interpretation */}
+                      <div className="text-xs text-slate-300 leading-relaxed italic">
+                        {interpretations.find(interp => interp.index === index)?.text || (
+                          isInterpreting ? (
+                            <span className="animate-pulse opacity-50">{t('consulting_spirits')}</span>
+                          ) : null
+                        )}
+                      </div>
                     </motion.div>
                   )}
                 </motion.div>

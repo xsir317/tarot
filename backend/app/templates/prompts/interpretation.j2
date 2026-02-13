@@ -5,7 +5,7 @@ User's question: {{ question }}
 
 Tarot cards:
 {% for card in cards %}
-{{ loop.index }}. {{ card.name }} ({{ card.position }})
+Index {{ loop.index0 }}: {{ card.name }} ({{ card.position }})
 {% endfor %}
 
 Requirements:
