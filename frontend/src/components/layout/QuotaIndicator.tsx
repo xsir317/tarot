@@ -5,10 +5,12 @@ import { apiClient } from '@/lib/api-client';
 import { useUserStore } from '@/stores/useUserStore';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
 
 export function QuotaIndicator() {
   const { isAuthenticated, user } = useUserStore();
   const [quota, setQuota] = useState<{ remaining: number; total: number } | null>(null);
+  const locale = useLocale();
 
   useEffect(() => {
     // Fetch quota on mount
@@ -36,7 +38,7 @@ export function QuotaIndicator() {
       
       {quota.remaining === 0 && (
         <Button size="sm" variant="destructive" asChild>
-          <Link href="/pricing">Get More</Link>
+          <Link href={`/${locale}/pricing`}>Get More</Link>
         </Button>
       )}
 
@@ -46,7 +48,7 @@ export function QuotaIndicator() {
          </div>
       ) : (
         <Button size="sm" variant="secondary" asChild>
-          <Link href="/auth/login">Login</Link>
+          <Link href={`/${locale}/auth/login`}>Login</Link>
         </Button>
       )}
     </div>

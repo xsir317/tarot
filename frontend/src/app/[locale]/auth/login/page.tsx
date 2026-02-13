@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useUserStore } from '@/stores/useUserStore';
 import { apiClient } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 
 export default function LoginPage() {
   const t = useTranslations('Auth');
+  const locale = useLocale();
   const router = useRouter();
   const login = useUserStore((state) => state.login);
 
@@ -36,7 +38,7 @@ export default function LoginPage() {
       }
       setCodeSent(true);
     } catch (err) {
-      setError('Failed to send code');
+      setError(t('send_code_failed'));
     } finally {
       setLoading(false);
     }
@@ -51,9 +53,9 @@ export default function LoginPage() {
       const { access_token, refresh_token, user } = res.data.data;
       
       login(user, access_token, refresh_token);
-      router.push('/');
+      router.push(`/${locale}`);
     } catch (err) {
-      setError('Login failed');
+      setError(t('login_failed'));
     } finally {
       setLoading(false);
     }
@@ -67,7 +69,7 @@ export default function LoginPage() {
             {t('login_title')}
           </CardTitle>
           <CardDescription className="text-center text-slate-400">
-            Enter your phone number to continue
+            {t('login_description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -110,7 +112,7 @@ export default function LoginPage() {
             onClick={handleLogin}
             disabled={loading || !code}
           >
-            {loading ? 'Loading...' : t('login_button')}
+            {loading ? t('loading') : t('login_button')}
           </Button>
         </CardFooter>
       </Card>

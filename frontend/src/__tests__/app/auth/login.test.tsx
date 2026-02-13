@@ -35,12 +35,16 @@ vi.mock('next/navigation', () => ({
 const messages = {
   Auth: {
     login_title: "Login",
+    login_description: "Enter your phone number to continue",
     phone_label: "Phone Number",
     code_label: "Verification Code",
     send_code: "Send Code",
     login_button: "Login",
     code_sent: "Code sent!",
-    login_success: "Login successful!"
+    login_success: "Login successful!",
+    send_code_failed: "Failed to send code",
+    login_failed: "Login failed",
+    loading: "Loading..."
   }
 };
 
@@ -115,7 +119,7 @@ describe('LoginPage', () => {
         'at', 
         'rt'
       );
-      expect(mockPush).toHaveBeenCalledWith('/');
+      expect(mockPush).toHaveBeenCalledWith('/en');
     });
   });
 });

@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useTarotStore } from '@/stores/useTarotStore';
 import { apiClient } from '@/lib/api-client';
 import { TarotCard } from '@/components/tarot/TarotCard';
 import { Button } from '@/components/ui/button';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function ReadingPage() {
   const t = useTranslations('Tarot');
+  const cardsT = useTranslations('Cards');
+  const locale = useLocale();
+  const router = useRouter();
   const { 
     stage, 
     setStage, 
@@ -60,7 +64,7 @@ export default function ReadingPage() {
         const res = await apiClient.post('/tarot/interpret', {
           question,
           cards: cards.map(c => ({ id: c.id, name: c.name_key, position: c.position })), // Pass name_key or let backend handle lookup by ID
-          language: 'zh'
+          language: locale
         });
         const { interpretations, reading_id, overall_interpretation } = res.data.data;
         setInterpretations(interpretations, reading_id, overall_interpretation);
@@ -75,7 +79,7 @@ export default function ReadingPage() {
     <div className="min-h-screen bg-slate-950 flex flex-col items-center py-8 overflow-hidden">
       {/* Header */}
       <div className="text-center mb-8 px-4 z-10">
-        <h2 className="text-xl text-purple-300 font-serif mb-2">Question</h2>
+        <h2 className="text-xl text-purple-300 font-serif mb-2">{t('question_label')}</h2>
         <p className="text-white text-lg italic opacity-80 max-w-xl mx-auto">"{question}"</p>
       </div>
 
@@ -106,7 +110,7 @@ export default function ReadingPage() {
                   <TarotCard width={120} height={200} />
                 </motion.div>
               ))}
-              <div className="mt-64 text-purple-300 animate-pulse">Shuffling the deck...</div>
+              <div className="mt-64 text-purple-300 animate-pulse">{t('shuffling_text')}</div>
             </motion.div>
           )}
 
@@ -133,7 +137,7 @@ export default function ReadingPage() {
                 disabled={loading}
                 className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-serif px-12 py-6 text-xl rounded-full shadow-[0_0_20px_rgba(245,158,11,0.3)]"
               >
-                {loading ? 'Drawing...' : t('draw_button')}
+                {loading ? t('drawing_loading') : t('draw_button')}
               </Button>
             </motion.div>
           )}
@@ -167,7 +171,7 @@ export default function ReadingPage() {
                       animate={{ opacity: 1 }}
                       className="mt-4 text-center"
                     >
-                      <p className="font-serif text-amber-300">{t(card.name_key)}</p>
+                      <p className="font-serif text-amber-300">{cardsT(card.name_key)}</p>
                       <p className="text-xs text-slate-400 uppercase tracking-widest">{card.position}</p>
                     </motion.div>
                   )}
@@ -186,18 +190,18 @@ export default function ReadingPage() {
           className="w-full max-w-4xl px-6 pb-20 mt-12"
         >
           <div className="bg-slate-900/80 backdrop-blur-md border border-slate-700 rounded-2xl p-8 shadow-2xl">
-            <h3 className="text-3xl font-serif text-center mb-8 text-purple-200">The Oracle Speaks</h3>
+            <h3 className="text-3xl font-serif text-center mb-8 text-purple-200">{t('oracle_title')}</h3>
             
             <div className="space-y-6 text-slate-200 leading-relaxed">
                {/* This would be populated from interpretations store */}
                <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                 {overallInterpretation || "Consulting the stars..."}
+                 {overallInterpretation || t('consulting_stars')}
                </div>
             </div>
 
             <div className="mt-8 flex justify-center gap-4">
-               <Button variant="outline" onClick={() => window.location.href = '/'}>Home</Button>
-               <Button className="bg-purple-600">Save Reading</Button>
+               <Button variant="outline" onClick={() => router.push(`/${locale}`)}>{t('home_button')}</Button>
+               <Button className="bg-purple-600">{t('save_reading')}</Button>
             </div>
           </div>
         </motion.div>

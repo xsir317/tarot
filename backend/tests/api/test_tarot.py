@@ -18,7 +18,7 @@ class MockLLMService:
             interpretations=[
                 CardInterpretation(
                     card_index=i,
-                    card_name=c["name"],
+                    card_name=c.get("name") or c.get("name_key") or "Unknown",
                     position=c["position"],
                     interpretation="Mock interpretation"
                 ) for i, c in enumerate(cards)
@@ -56,7 +56,7 @@ async def test_tarot_flow(client: TestClient, mock_llm_service):
     response = client.post("/api/v1/tarot/interpret", json={
         "question": "Is this a good time to start a business?",
         "cards": [
-            {"id": c["id"], "name": c["name"], "position": c["position"]} for c in cards
+            {"id": c["id"], "name_key": c["name_key"], "position": c["position"]} for c in cards
         ],
         "language": "en",
         "device_fingerprint": "test_fingerprint"

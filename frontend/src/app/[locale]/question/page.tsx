@@ -3,14 +3,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useTarotStore } from '@/stores/useTarotStore';
 import { apiClient } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea'; // Need to create this
-import { Card } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function QuestionPage() {
   const t = useTranslations('Tarot');
+  const locale = useLocale();
   const router = useRouter();
   const { setQuestion, setStage } = useTarotStore();
   const [input, setInput] = useState('');
@@ -24,22 +25,20 @@ export default function QuestionPage() {
       // Validate question API
       const res = await apiClient.post('/tarot/validate', { 
         question: input,
-        language: 'zh' // TODO: dynamic locale
+        language: locale
       });
       
       if (res.data.data.suitable) {
         setQuestion(input);
         setStage('shuffling');
-        router.push('/tarot/reading');
+        router.push(`/${locale}/tarot/reading`);
       } else {
         alert(res.data.data.reason); // Better: Toast
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      // Fallback for MVP if API fails or offline
-      setQuestion(input);
-      setStage('shuffling');
-      router.push('/tarot/reading');
+      const errorMsg = err.response?.data?.message || err.message || "Failed to validate question";
+      alert(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -49,11 +48,11 @@ export default function QuestionPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 p-4 text-white">
       <div className="max-w-2xl w-full space-y-8">
         <h1 className="text-4xl font-serif text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-          Ask the Tarot
+          {t('question_title')}
         </h1>
         
         <div className="relative">
-          <textarea
+          <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t('input_placeholder')}
@@ -70,7 +69,7 @@ export default function QuestionPage() {
           disabled={!input.trim() || loading}
           className="w-full py-6 text-xl bg-purple-600 hover:bg-purple-700 transition-all shadow-lg shadow-purple-900/20"
         >
-          {loading ? 'Consulting Spirits...' : 'Begin Reading'}
+          {loading ? t('consulting_spirits') : t('begin_reading')}
         </Button>
       </div>
     </div>

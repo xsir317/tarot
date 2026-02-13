@@ -48,6 +48,10 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
 
+    # DeepSeek
+    deepseek_api_key: str = ""
+    deepseek_model: str = "deepseek/deepseek-chat"
+
     # Anthropic
     anthropic_api_key: str = ""
 

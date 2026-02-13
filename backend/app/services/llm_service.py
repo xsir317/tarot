@@ -46,11 +46,22 @@ class LLMService:
         """Initialize LLMService.
 
         Args:
-            api_key: OpenAI API key (default from settings)
+            api_key: API key (default from settings)
             model: Model name (default from settings)
         """
-        self._api_key = api_key or settings.openai_api_key
-        self._model = model or settings.openai_model
+        # Prioritize DeepSeek as requested by the user
+        self._model = model or settings.deepseek_model or settings.openai_model
+        
+        if "deepseek" in self._model.lower():
+            self._api_key = api_key or settings.deepseek_api_key
+        else:
+            self._api_key = api_key or settings.openai_api_key
+
+        if not self._api_key:
+            raise TarotError(
+                message=f"LLM API key is missing for model {self._model}. "
+                "Please check your .env file and ensure DEEPSEEK_API_KEY or OPENAI_API_KEY is set."
+            )
         
         # Initialize Jinja2 environment
         template_dir = Path(__file__).resolve().parent.parent / "templates" / "prompts"
@@ -100,15 +111,21 @@ class LLMService:
                 gender=gender,
             )
 
-            response = await litellm.acompletion(
-                model=self._model,
-                messages=[
+            completion_kwargs = {
+                "model": self._model,
+                "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
-                api_key=self._api_key,
-                response_format={"type": "json_object"},
-            )
+                "api_key": self._api_key,
+                "response_format": {"type": "json_object"},
+            }
+
+            # Add base_url for DeepSeek to avoid 401 on beta endpoint
+            if "deepseek" in self._model.lower():
+                completion_kwargs["base_url"] = "https://api.deepseek.com"
+
+            response = await litellm.acompletion(**completion_kwargs)
 
             # litellm returns a ModelResponse object, similar to OpenAI
             content = response.choices[0].message.content
@@ -190,15 +207,21 @@ class LLMService:
                 cards=cards,
             )
 
-            response = await litellm.acompletion(
-                model=self._model,
-                messages=[
+            completion_kwargs = {
+                "model": self._model,
+                "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
-                api_key=self._api_key,
-                response_format={"type": "json_object"},
-            )
+                "api_key": self._api_key,
+                "response_format": {"type": "json_object"},
+            }
+
+            # Add base_url for DeepSeek to avoid 401 on beta endpoint
+            if "deepseek" in self._model.lower():
+                completion_kwargs["base_url"] = "https://api.deepseek.com"
+
+            response = await litellm.acompletion(**completion_kwargs)
 
             content = response.choices[0].message.content
             return InterpretationResult.model_validate_json(content)

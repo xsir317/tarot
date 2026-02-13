@@ -8,15 +8,29 @@
   },
   "Auth": {
     "login_title": "Login",
+    "login_description": "Enter your phone number to continue",
     "phone_label": "Phone Number",
     "code_label": "Verification Code",
     "send_code": "Send Code",
     "login_button": "Login",
     "code_sent": "Code sent!",
-    "login_success": "Login successful!"
+    "login_success": "Login successful!",
+    "send_code_failed": "Failed to send code",
+    "login_failed": "Login failed",
+    "loading": "Loading..."
   },
   "Tarot": {
     "input_placeholder": "Ask your question...",
+    "question_title": "Ask the Tarot",
+    "begin_reading": "Begin Reading",
+    "consulting_spirits": "Consulting spirits...",
+    "question_label": "Question",
+    "shuffling_text": "Shuffling the deck...",
+    "drawing_loading": "Drawing...",
+    "oracle_title": "The Oracle Speaks",
+    "consulting_stars": "Consulting the stars...",
+    "home_button": "Home",
+    "save_reading": "Save Reading",
     "shuffle_button": "Shuffle Cards",
     "draw_button": "Draw Cards",
     "reveal_button": "Reveal Destiny"

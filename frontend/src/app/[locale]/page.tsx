@@ -16,14 +16,14 @@ export default function Home() {
         
         <div className="flex gap-4 mt-8">
           <Link 
-            href="/question" 
+            href="question" 
             className="px-8 py-4 bg-purple-600 hover:bg-purple-700 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-purple-500/20"
           >
             {t('start_button')}
           </Link>
           
           <Link 
-            href="/auth/login" 
+            href="auth/login" 
             className="px-8 py-4 bg-slate-800 hover:bg-slate-700 rounded-lg text-lg font-semibold transition-all"
           >
             {t('login_button')}

@@ -127,18 +127,12 @@ footer
 |------|------|
 | 开发工作流程 | docs/development-workflow.md |
 | TDD 工作流程 | docs/tdd-workflow.md |
-| 产品愿景 | docs/product/mvp-vision.md |
 | 产品需求 | docs/product/prd.md |
 | API 设计 | docs/design/api-design.md |
 | 数据模型 | docs/design/data-model.md |
 | 用户流程 | docs/product/user-flow.md |
-| 认证策略 | docs/backend/auth-strategy.md |
-| 支付流程 | docs/backend/payment-flow.md |
-| 额度策略 | docs/backend/quota-strategy.md |
-| LLM 集成 | docs/backend/llm-integration.md |
-| 页面跳转 | docs/frontend/pages-flow.md |
-| 组件设计 | docs/frontend/component-design.md |
-| 动画规范 | docs/frontend/animation-spec.md |
+| 前端架构 | docs/design/frontend-architecture.md |
+| 后端架构 | docs/design/backend-architecture.md |
 | 部署与运维指南 | docs/deployment-and-operations.md |
 
 ## 部署架构
